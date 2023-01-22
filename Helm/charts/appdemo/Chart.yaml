@@ -1,0 +1,6 @@
+apiVersion: v2
+name: appdemo
+description: Helm chart for React-App
+type: application
+version: 0.2.3
+appVersion: "1.16.0"
