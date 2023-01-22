@@ -1,17 +1,13 @@
 name: Deploy to ECR
 
 on:
- 
   push:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
-  
   build:
-    
     name: Build Image
     runs-on: ubuntu-latest
-
    
     steps:
 
