@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: default
+  name: react-app
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: react-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: react-app
+    spec:
+      containers:
+      - image: 251601115167.dkr.ecr.us-east-1.amazonaws.com/react-app:1.0.2
+        imagePullPolicy: Always
+        name: react-app
+        ports:
+        - containerPort: 80
