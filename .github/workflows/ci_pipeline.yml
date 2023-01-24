@@ -27,8 +27,7 @@ jobs:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         REPOSITORY: ci-react
       run: |
-        version=${{ github.ref_name }}
-        IMAGE_TAG=${version:1}
+        IMAGE_TAG=$(echo ${{ github.sha }} | cut -c1-8)
         docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG /home/runner/work/CI-React/CI-React/React-App
         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
@@ -37,7 +36,8 @@ jobs:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         REPOSITORY: react-helm
       run: |
-        version=${{ github.ref_name }}
-        pwd && cd /home/runner/work/CI-React/CI-React/Helm/charts
+        version=$(echo ${{ github.sha }} | cut -c1)
+        echo $version
+        cd /home/runner/work/CI-React/CI-React/Helm/charts
         helm package $REPOSITORY --app-version=${version:1} --version=${version:1}
         helm push $REPOSITORY-${version:1}.tgz oci://$REGISTRY
