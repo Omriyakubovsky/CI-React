@@ -10,9 +10,8 @@ jobs:
     runs-on: ubuntu-latest
    
     steps:
-
-    - name: Check out code
-      uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v3
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -23,11 +22,20 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Build, tag, and push image to Amazon ECR
+    - name: Build, tag, and push docker image to Amazon ECR
       env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-        IMAGE_TAG: $(git rev-parse --short "$GITHUB_SHA")
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        REPOSITORY: ci-react
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        IMAGE_TAG=$(echo ${{ github.sha }} | cut -c1-8)
+        docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+    - name: Package and push helm chart to Amazon ECR
+      env:
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        REPOSITORY: react-helm
+      run: |
+        version=${{ github.ref_name }}
+        helm package $REPOSITORY --app-version=${version:1} --version=${version:1}
+        helm push $REPOSITORY-${version:1}.tgz oci://$REGISTRY
