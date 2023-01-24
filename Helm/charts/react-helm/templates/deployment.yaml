@@ -14,7 +14,7 @@ spec:
         app.kubernetes.io/name: react-app
     spec:
       containers:
-      - image: 251601115167.dkr.ecr.us-east-1.amazonaws.com/react-app:1.0.2
+      - image: 251601115167.dkr.ecr.us-east-1.amazonaws.com/ci-react:28ad8f1b
         imagePullPolicy: Always
         name: react-app
         ports:
