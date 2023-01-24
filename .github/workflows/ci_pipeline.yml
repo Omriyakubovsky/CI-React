@@ -39,4 +39,4 @@ jobs:
         version=$(echo ${{ github.sha }} | cut -c1-2)
         cd /home/runner/work/CI-React/CI-React/Helm/charts
         helm package $REPOSITORY --app-version=0.2.4 --version=0.2.4
-        helm push $REPOSITORY-$version.tgz oci://$REGISTRY
+        helm push $REPOSITORY-0.2.4.tgz oci://$REGISTRY
