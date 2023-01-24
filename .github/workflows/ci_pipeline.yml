@@ -38,6 +38,6 @@ jobs:
         REPOSITORY: react-helm
       run: |
         version=${{ github.ref_name }}
-        cd /home/runner/work/CI-React/CI-React/Helm
+        pwd && cd .. && cd /home/runner/work/CI-React/CI-React/Helm
         helm package $REPOSITORY --app-version=${version:1} --version=${version:1}
         helm push $REPOSITORY-${version:1}.tgz oci://$REGISTRY
