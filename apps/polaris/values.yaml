@@ -92,7 +92,7 @@ dashboard:
       alb.ingress.kubernetes.io/scheme: internet-facing,
       alb.ingress.kubernetes.io/group.name: argocd,
       alb.ingress.kubernetes.io/group.order: '3',
-      alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 6000}',
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 6000}]',
       alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:292029882946:certificate/39393ac6-c9ae-4475-83c8-93d866015904"
     }
     # dashboard.ingress.tls -- Ingress TLS configuration
