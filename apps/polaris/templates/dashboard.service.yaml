@@ -15,7 +15,7 @@ metadata:
 spec:
   ports:
   - name: http-dashboard
-    port: 80
+    port: 8080
     protocol: TCP
     targetPort: {{ .Values.dashboard.service.targetPort | default .Values.dashboard.port }}
   selector:
