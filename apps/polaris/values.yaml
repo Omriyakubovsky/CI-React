@@ -96,7 +96,9 @@ dashboard:
       alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:292029882946:certificate/ea9abb56-b349-4e75-b9f1-9e3338af0106"
     }
     # dashboard.ingress.tls -- Ingress TLS configuration
-    tls: ["dashboard.lacoyart.online"]
+    tls: [
+      "dashboard.lacoyart.online,"
+    ]
   # dashboard.priorityClassName -- Priority Class name to be used in deployment if provided.
   priorityClassName:
   # dashboard.disallowExemptions -- Disallow any exemption
