@@ -81,13 +81,20 @@ dashboard:
   affinity: {}
   ingress:
     # dashboard.ingress.enabled -- Whether to enable ingress to the dashboard
-    enabled: false
+    enabled: true
     # dashboard.ingress.ingressClassName -- From Kubernetes 1.18+ this field is supported in case your ingress controller supports it. When set, you do not need to add the ingress class as annotation.
-    ingressClassName:
+    ingressClassName: alb
     # dashboard.ingress.hosts -- Web ingress hostnames
-    hosts: []
+    hosts: ["dashboard.lacoyart.online"]
     # dashboard.ingress.annotations -- Web ingress annotations
-    annotations: {}
+    annotations: {
+      kubernetes.io/ingress.class: alb,
+      alb.ingress.kubernetes.io/scheme: internet-facing,
+      alb.ingress.kubernetes.io/group.name: argocd,
+      alb.ingress.kubernetes.io/group.order: '3',
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 6000}',
+      alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:292029882946:certificate/39393ac6-c9ae-4475-83c8-93d866015904"
+    }
     # dashboard.ingress.tls -- Ingress TLS configuration
     tls: []
   # dashboard.priorityClassName -- Priority Class name to be used in deployment if provided.
