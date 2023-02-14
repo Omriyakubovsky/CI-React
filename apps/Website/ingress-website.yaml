@@ -7,8 +7,8 @@ metadata:
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/group.name: argocd
-    alb.ingress.kubernetes.io/group.order: '2'
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 8080}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/group.order: '1'
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
     alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:292029882946:certificate/39393ac6-c9ae-4475-83c8-93d866015904"
 spec:
   rules:
@@ -18,21 +18,10 @@ spec:
       - path: /
         backend:
           service:
-            name: service-2048
+            name: service-website
             port:
               number: 443
-        pathType: Prefix
-  - host: "dashboard.lacoyart.online"
-    http:
-      paths:
-      - path: /
-        backend:
-          service:
-            name: polaris-dashboard
-            port:
-              number: 8080
         pathType: Prefix
   tls:
   - hosts:
     - app.lacoyart.online
-    - dashboard.lacoyart.online

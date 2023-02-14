@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: "service-2048"
+  name: "service-website"
 spec:
   ports:
     - port: 443
@@ -9,4 +9,4 @@ spec:
       protocol: TCP
   type: NodePort
   selector:
-    app: "2048"
+    app: "website"

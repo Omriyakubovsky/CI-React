@@ -18,7 +18,7 @@ spec:
       - path: /
         backend:
           service:
-            name: service-2048
+            name: service-website
             port:
               number: 443
         pathType: Prefix

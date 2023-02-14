@@ -1,0 +1,406 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Creating Serverless dotnet lambda and API gateway
+
+Resources:
+
+##### API GW #####
+
+  TelemarketingAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: Telemarketing
+      Description: Telemarketing API
+      StageName: prod
+      EndpointConfiguration:
+        Type: Edge
+      DisableExecuteApiEndpoint: true
+      BinaryMediaTypes:
+        - "*/*"
+  GovAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: Gov
+      Description: Gov API
+      StageName: prod
+      EndpointConfiguration:
+        Type: Edge
+      DisableExecuteApiEndpoint: true
+  WordpressAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: Wordpress
+      Description: Wordpress API
+      StageName: prod
+      EndpointConfiguration:
+        Type: Edge
+      DisableExecuteApiEndpoint: false
+  PhoneListVerificationAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: Phone-List-Verification
+      Description: PhoneListVerification API
+      StageName: prod
+      EndpointConfiguration:
+        Type: Edge
+      DisableExecuteApiEndpoint: true
+
+##### S3 Bucket #####
+
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: dnc-lambda-logs
+
+##### Lambda Function #####
+
+  OtpGenerator:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: DoNotCall.OtpGenerator
+      Handler: DoNotCall.OtpGenerator::DoNotCall.OtpGenerator.Function::FunctionHandler
+      Runtime: dotnet6
+      MemorySize: 256
+      Timeout: 30
+      Environment:
+        Variables:
+          environment: dev
+      FunctionName: OtpGeneratorFunction
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0d86d6f084ef2a473
+        SubnetIds:
+          - subnet-00d5da9a733ffd818
+      Role: arn:aws:iam::115223379961:role/LambdaRole
+      Events:
+        WordpressAPI:
+          Type: Api
+          Properties:
+            Path: /restricted/generate-otp
+            Method: GET
+            RestApiId: !Ref WordpressAPI
+
+  GetPhoneRegistrationDate:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: DoNotCall.GetPhoneRegistrationDate
+      Handler: DoNotCall.GetPhoneRegistrationDate::DoNotCall.GetPhoneRegistrationDate.Function::FunctionHandler
+      Runtime: dotnet6
+      MemorySize: 256
+      Timeout: 30
+      Environment:
+        Variables:
+          environment: dev
+      FunctionName: GetPhoneRegistrationDateFunction
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0d86d6f084ef2a473
+        SubnetIds:
+          - subnet-00d5da9a733ffd818
+      Role: arn:aws:iam::115223379961:role/LambdaRole
+      Events:
+        GovAPI:
+          Type: Api
+          Properties:
+            Path: /restricted/get-phone-registration-date
+            Method: GET
+            RestApiId: !Ref GovAPI
+        WordpressAPI:
+          Type: Api
+          Properties:
+            Path: /restricted/get-phone-registration-date
+            Method: GET
+            RestApiId: !Ref WordpressAPI
+
+  GetToken:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: DoNotCall.GetToken
+      Handler: DoNotCall.GetToken::DoNotCall.GetToken.Function::FunctionHandler
+      Runtime: dotnet6
+      MemorySize: 256
+      Timeout: 30
+      Environment:
+        Variables:
+          environment: dev
+      FunctionName: GetTokenFunction
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0d86d6f084ef2a473
+        SubnetIds:
+          - subnet-00d5da9a733ffd818
+      Role: arn:aws:iam::115223379961:role/LambdaRole
+      Events:
+        WordpressAPI:
+          Type: Api
+          Properties:
+            Path: /restricted/get-token
+            Method: POST
+            RestApiId: !Ref WordpressAPI
+
+  PhoneListVerification:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: DoNotCall.PhoneListVerification
+      Handler: DoNotCall.PhoneListVerification::DoNotCall.PhoneListVerification.Function::FunctionHandler
+      Runtime: dotnet6
+      MemorySize: 3008
+      Timeout: 30
+      Environment:
+        Variables:
+          environment: dev
+      FunctionName: PhoneListVerificationFunction
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0d86d6f084ef2a473
+        SubnetIds:
+          - subnet-00d5da9a733ffd818
+      Role: arn:aws:iam::115223379961:role/LambdaRole
+      Events:
+        PhoneListVerificationAPI:
+          Type: Api
+          Properties:
+            Path: /restricted/phone-list-verification
+            Method: POST
+            RestApiId: !Ref PhoneListVerificationAPI
+
+  PhoneQuery:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: DoNotCall.PhoneQuery
+      Handler: DoNotCall.PhoneQuery
+      Runtime: dotnet6
+      MemorySize: 3008
+      EphemeralStorage:
+        Size: 10240
+      Timeout: 150
+      Environment:
+        Variables:
+          environment: dev
+      FunctionName: PhoneQueryFunction
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0d86d6f084ef2a473
+        SubnetIds:
+          - subnet-00d5da9a733ffd818
+      Role: arn:aws:iam::115223379961:role/LambdaRole
+      Events:
+        TelemarketingAPI:
+          Type: Api
+          Properties:
+            Path: /restricted/phone-query
+            Method: POST
+            RestApiId: !Ref TelemarketingAPI
+
+  RemovePhoneFromPoll:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: DoNotCall.RemovePhoneFromPoll
+      Handler: DoNotCall.RemovePhoneFromPoll::DoNotCall.RemovePhoneFromPoll.Function::FunctionHandler
+      Runtime: dotnet6
+      MemorySize: 256
+      Timeout: 30
+      Environment:
+        Variables:
+          environment: dev
+      FunctionName: RemovePhoneFromPollFunction
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0d86d6f084ef2a473
+        SubnetIds:
+          - subnet-00d5da9a733ffd818
+      Role: arn:aws:iam::115223379961:role/LambdaRole
+      Events:
+        GovAPI:
+          Type: Api
+          Properties:
+            Path: /restricted/remove-phone-from-poll
+            Method: POST
+            RestApiId: !Ref GovAPI
+        WordpressAPI:
+          Type: Api
+          Properties:
+            Path: /restricted/remove-phone-from-poll
+            Method: POST
+            RestApiId: !Ref WordpressAPI
+
+  RevokeToken:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: DoNotCall.RevokeToken
+      Handler: DoNotCall.RevokeToken::DoNotCall.RevokeToken.Function::FunctionHandler
+      Runtime: dotnet6
+      MemorySize: 256
+      Timeout: 30
+      Environment:
+        Variables:
+          environment: dev
+      FunctionName: RevokeTokenFunction
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0d86d6f084ef2a473
+        SubnetIds:
+          - subnet-00d5da9a733ffd818
+      Role: arn:aws:iam::115223379961:role/LambdaRole
+      Events:
+        WordpressAPI:
+          Type: Api
+          Properties:
+            Path: /restricted/revoke-token
+            Method: POST
+            RestApiId: !Ref WordpressAPI
+
+  SinglePhoneVerification:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: DoNotCall.SinglePhoneVerification
+      Handler: DoNotCall.SinglePhoneVerification::DoNotCall.SinglePhoneVerification.Function::FunctionHandler
+      Runtime: dotnet6
+      MemorySize: 256
+      Timeout: 30
+      Environment:
+        Variables:
+          environment: dev
+      FunctionName: SinglePhoneVerificationFunction
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0d86d6f084ef2a473
+        SubnetIds:
+          - subnet-00d5da9a733ffd818
+      Role: arn:aws:iam::115223379961:role/LambdaRole
+      Events:
+        WordpressAPI:
+          Type: Api
+          Properties:
+            Path: /restricted/single-phone-verification
+            Method: POST
+            RestApiId: !Ref WordpressAPI
+
+  AddPhoneToPoll:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: DoNotCall.AddPhoneToPoll
+      Handler: DoNotCall.AddPhoneToPoll::DoNotCall.AddPhoneToPoll.Function::FunctionHandler
+      Runtime: dotnet6
+      MemorySize: 256
+      Timeout: 30
+      Environment:
+        Variables:
+          environment: dev
+      FunctionName: AddPhoneToPollFunction
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0d86d6f084ef2a473
+        SubnetIds:
+          - subnet-00d5da9a733ffd818
+      Role: arn:aws:iam::115223379961:role/LambdaRole
+      Events:
+        GovAPI:
+          Type: Api
+          Properties:
+            Path: /restricted/add-phone-to-poll
+            Method: POST
+            RestApiId: !Ref GovAPI
+        WordpressAPI:
+          Type: Api
+          Properties:
+            Path: /restricted/add-phone-to-poll
+            Method: POST
+            RestApiId: !Ref WordpressAPI
+            
+  SendOpenSMS:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: DoNotCall.SendOpenSMS
+      Handler: DoNotCall.SendOpenSMS::DoNotCall.SendOpenSMS.Function::FunctionHandler
+      Runtime: dotnet6
+      MemorySize: 256
+      Timeout: 30
+      Environment:
+        Variables:
+          environment: dev
+      FunctionName: SendOpenSMSFunction
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0d86d6f084ef2a473
+        SubnetIds:
+          - subnet-00d5da9a733ffd818
+      Role: arn:aws:iam::115223379961:role/LambdaRole
+      Events:
+        WordpressAPI:
+          Type: Api
+          Properties:
+            Path: /restricted/send-open-sms
+            Method: POST
+            RestApiId: !Ref WordpressAPI
+            
+  GetCompaniesList:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: DoNotCall.GetCompaniesList
+      Handler: DoNotCall.GetCompaniesList::DoNotCall.GetCompaniesList.Function::FunctionHandler
+      Runtime: dotnet6
+      MemorySize: 256
+      Timeout: 30
+      Environment:
+        Variables:
+          environment: dev
+      FunctionName: GetCompaniesListFunction
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0d86d6f084ef2a473
+        SubnetIds:
+          - subnet-00d5da9a733ffd818
+      Role: arn:aws:iam::115223379961:role/LambdaRole
+      Events:
+        WordpressAPI:
+          Type: Api
+          Properties:
+            Path: /restricted/Get-Companies-List
+            Method: POST
+            RestApiId: !Ref WordpressAPI
+
+  GetCompanyTokenById:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: DoNotCall.GetCompanyTokenById
+      Handler: DoNotCall.GetCompanyTokenById::DoNotCall.GetCompanyTokenById.Function::FunctionHandler
+      Runtime: dotnet6
+      MemorySize: 256
+      Timeout: 30
+      Environment:
+        Variables:
+          environment: dev
+      FunctionName: GetCompanyTokenByIdFunction
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0d86d6f084ef2a473
+        SubnetIds:
+          - subnet-00d5da9a733ffd818
+      Role: arn:aws:iam::115223379961:role/LambdaRole
+      Events:
+        WordpressAPI:
+          Type: Api
+          Properties:
+            Path: /restricted/Get-Company-Token-By-Id
+            Method: POST
+            RestApiId: !Ref WordpressAPI
+
+  LoadCWLogsToDB:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: DoNotCall.LoadCWLogsToDB
+      Handler: DoNotCall.LoadCWLogsToDB::DoNotCall.LoadCWLogsToDB.Function::FunctionHandler
+      Runtime: dotnet6
+      MemorySize: 3008
+      Timeout: 900
+      Environment:
+        Variables:
+          environment: dev
+      FunctionName: LoadCWLogsToDBFunction
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0d86d6f084ef2a473
+        SubnetIds:
+          - subnet-00d5da9a733ffd818
+      Role: arn:aws:iam::115223379961:role/LambdaRole
