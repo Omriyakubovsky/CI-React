@@ -80,3 +80,29 @@ spec:
     app: grafana
   sessionAffinity: None
   type: NodePort
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/group.name: argocd
+    alb.ingress.kubernetes.io/load-balancer-name: "argocd-elb"
+    alb.ingress.kubernetes.io/ip-address-type: "ipv4"
+    alb.ingress.kubernetes.io/group.order: '3'
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 3001}]'
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:292029882946:certificate/ea9abb56-b349-4e75-b9f1-9e3338af0106"
+  name: grafana
+spec:
+  rules:
+  - host: "dashboard.lacoyart.online"
+    http:
+      paths:
+      - path: /
+        backend:
+          service:
+            name: grafana
+            port:
+              number: 3000
+        pathType: Prefix
