@@ -8,7 +8,7 @@ metadata:
     alb.ingress.kubernetes.io/group.name: argocd
     alb.ingress.kubernetes.io/group.order: '1'
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
-    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:292029882946:certificate/39393ac6-c9ae-4475-83c8-93d866015904"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:292029882946:certificate/c08c7c36-86fb-42cf-9ad3-2e908d696b2f"
 spec:
   rules:
   - host: "app.lacoyart.online"
