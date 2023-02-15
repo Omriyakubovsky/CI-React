@@ -140,9 +140,14 @@ dashboard:
 
     # dashboard.ingress.ingressClassName -- From Kubernetes 1.18+ this field is supported in case your ingress controller supports it. When set, you do not need to add the ingress class as annotation.
     ingressClassName:
-    annotations: {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
+    annotations: {
+      kubernetes.io/ingress.class: alb,
+      alb.ingress.kubernetes.io/scheme: internet-facing,
+      alb.ingress.kubernetes.io/group.name: argocd,
+      alb.ingress.kubernetes.io/group.order: '3',
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 3002}]',
+      alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:292029882946:certificate/ea9abb56-b349-4e75-b9f1-9e3338af0106"
+    }
     hosts:
       - host: "dashboard.lacoyart.online"
         paths:
