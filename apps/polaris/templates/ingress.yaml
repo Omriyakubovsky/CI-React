@@ -23,3 +23,6 @@ spec:
             port:
               number: 8080
         pathType: Prefix
+  tls:
+  - hosts:
+    - dashboard.lacoyart.online
