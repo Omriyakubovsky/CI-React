@@ -15,7 +15,6 @@ jobs:
 
       - name: Bump version and create release
         run: |
-          # Bump version
           currentTag=$(git describe --abbrev=0 --tags --always)
           if [[ -z "$currentTag" ]]; then
             bumpedTag="1.0.0"
@@ -30,12 +29,10 @@ jobs:
             fi
           fi
 
-          # Create tag
           echo "New tag to be created: $bumpedTag"
           git tag "$bumpedTag"
           git push origin "$bumpedTag"
 
-          # Create release
           export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
           response=$(curl --request POST \
             --url "https://api.github.com/repos/${{ github.repository }}/releases" \
