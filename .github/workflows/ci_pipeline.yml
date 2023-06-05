@@ -13,30 +13,36 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Get current tag
+        id: get_tag
+        run: |
+          echo "::set-output name=tag::$(git describe --abbrev=0 --tags --exact-match || echo '')"
+
       - name: Bump version and create release
         run: |
-          currentTag=$(git describe --abbrev=0 --tags --always)
+          currentTag=${{ steps.get_tag.outputs.tag }}
           if [[ -z "$currentTag" ]]; then
-            bumpedTag="1.0.0"
+            echo "No existing tag found. Skipping release creation."
+            exit 0
+          fi
+
+          versionParts=(${currentTag//./ })
+          if [[ ${versionParts[2]} == 9 ]]; then
+            bumpedTag="${versionParts[0]}.0.0"
+          elif [[ ${versionParts[1]} == 9 ]]; then
+            bumpedTag="${versionParts[0]}.$((${versionParts[1]} + 1)).0"
           else
-            versionParts=(${currentTag//./ })
-            if [[ ${versionParts[2]} == 9 ]]; then
-              bumpedTag="${versionParts[0]}.${versionParts[1]}.0"
-            elif [[ ${versionParts[1]} == 9 ]]; then
-              bumpedTag="${versionParts[0]}.0.${versionParts[2]}"
-            else
-              bumpedTag="${versionParts[0]}.${versionParts[1]}.$((${versionParts[2]} + 1))"
-            fi
+            bumpedTag="${versionParts[0]}.${versionParts[1]}.$((${versionParts[2]} + 1))"
           fi
 
           echo "New tag to be created: $bumpedTag"
           git tag "$bumpedTag"
           git push origin "$bumpedTag"
 
-          export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          export GH_TOKEN=${{ secrets.GH_TOKEN }}
           response=$(curl --request POST \
             --url "https://api.github.com/repos/${{ github.repository }}/releases" \
-            --header "Authorization: Bearer $GITHUB_TOKEN" \
+            --header "Authorization: Bearer $GH_TOKEN" \
             --header 'Content-Type: application/json' \
             --data-raw "{
               \"tag_name\": \"$bumpedTag\",
