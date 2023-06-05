@@ -23,7 +23,7 @@ jobs:
           currentTag=${{ steps.get_tag.outputs.tag }}
           if [[ -z "$currentTag" ]]; then
             echo "No existing tag found. Skipping release creation."
-            exit 0
+            exit 1
           fi
 
           versionParts=(${currentTag//./ })
