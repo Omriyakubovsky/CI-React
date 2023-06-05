@@ -30,9 +30,21 @@ jobs:
             fi
           fi
 
+          # Create tag
+          echo "New tag to be created: $bumpedTag"
+          git tag "$bumpedTag"
+          git push --tags
+
           # Create release
           export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
-          releaseTitle=$(curl -s "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${{ github.event.pull_request.number }}" | jq -r .title)
-          response=$(curl -X POST -H "Authorization: token $GITHUB_TOKEN" -d "{\"tag_name\": \"$bumpedTag\", \"name\": \"$releaseTitle\", \"body\": \"Release created from pull request.\"}" "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases")
-
+          response=$(curl --request POST \
+            --url "https://api.github.com/repos/${{ github.repository }}/releases" \
+            --header "Authorization: Bearer $GITHUB_TOKEN" \
+            --header 'Content-Type: application/json' \
+            --data-raw "{
+              \"tag_name\": \"$bumpedTag\",
+              \"name\": \"Release $bumpedTag\",
+              \"body\": \"Release created from push to main branch.\"
+            }")
+          
           echo "New release created with tag: $bumpedTag"
