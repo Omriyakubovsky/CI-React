@@ -1,22 +1,24 @@
-name: Bump Tag and Create Release
+name: Tag Extraction
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
-  bump-and-release:
+  extract_tag:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Get current tag
+      - name: Extract current tag
         id: get_tag
         run: |
           currentTag=$(git describe --abbrev=0 --tags)
           echo "::set-output name=tag::$currentTag"
+
+      - name: Use the extracted tag
+        run: echo "Current tag is ${{ steps.get_tag.outputs.tag }}"
 
       - name: Bump tag version
         id: bump_version
