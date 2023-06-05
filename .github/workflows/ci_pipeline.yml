@@ -1,4 +1,4 @@
-name: Release Workflow
+name: Bump Tag and Create Release
 
 on:
   push:
@@ -6,48 +6,43 @@ on:
       - main
 
 jobs:
-  release:
+  bump-and-release:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v2
 
       - name: Get current tag
         id: get_tag
         run: |
-          echo "::set-output name=tag::$(git describe --abbrev=0 --tags --exact-match || echo '')"
+          currentTag=$(git describe --abbrev=0 --tags)
+          echo "::set-output name=tag::$currentTag"
 
-      - name: Bump version and create release
+      - name: Bump tag version
+        id: bump_version
         run: |
           currentTag=${{ steps.get_tag.outputs.tag }}
-          if [[ -z "$currentTag" ]]; then
-            echo "No existing tag found. Skipping release creation."
-            exit 1
-          fi
-
           versionParts=(${currentTag//./ })
           if [[ ${versionParts[2]} == 9 ]]; then
-            bumpedTag="${versionParts[0]}.0.0"
+            bumpedTag="${versionParts[0]}.${versionParts[1]}.0"
           elif [[ ${versionParts[1]} == 9 ]]; then
-            bumpedTag="${versionParts[0]}.$((${versionParts[1]} + 1)).0"
+            bumpedTag="${versionParts[0]}.0.${versionParts[2]}"
           else
             bumpedTag="${versionParts[0]}.${versionParts[1]}.$((${versionParts[2]} + 1))"
           fi
+          echo "::set-output name=bumped_tag::$bumpedTag"
 
-          echo "New tag to be created: $bumpedTag"
-          git tag "$bumpedTag"
-          git push origin "$bumpedTag"
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          tag_name: ${{ steps.bump_version.outputs.bumped_tag }}
+          release_name: Release ${{ steps.bump_version.outputs.bumped_tag }}
+          body: |
+            This is the release for version ${{ steps.bump_version.outputs.bumped_tag }}.
 
-          export GH_TOKEN=${{ secrets.GH_TOKEN }}
-          response=$(curl --request POST \
-            --url "https://api.github.com/repos/${{ github.repository }}/releases" \
-            --header "Authorization: Bearer $GH_TOKEN" \
-            --header 'Content-Type: application/json' \
-            --data-raw "{
-              \"tag_name\": \"$bumpedTag\",
-              \"name\": \"Release $bumpedTag\",
-              \"body\": \"Release created from push to main branch.\"
-            }")
-          
-          echo "New release created with tag: $bumpedTag"
+      - name: Debug release response
+        run: |
+          echo "New release created with tag: ${{ steps.create_release.outputs.tag }}"
