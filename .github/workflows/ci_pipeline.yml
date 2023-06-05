@@ -1,7 +1,7 @@
 name: Release Workflow
 
 on:
-  push:
+  pull_request:
     branches:
       - main
 
@@ -16,18 +16,18 @@ jobs:
       - name: Bump version and create release
         run: |
           # Bump version
-          currentTag=$(git describe --abbrev=0 --tags)
-          versionParts=(${currentTag//./ })  # Split version string into an array
-
-          if [[ ${versionParts[2]} == 9 ]]; then
-            # If third number is 9, increment second number and set third number to 0
-            bumpedTag="${versionParts[0]}.${versionParts[1]}.0"
-          elif [[ ${versionParts[1]} == 9 ]]; then
-            # If second number is 9, increment first number and set second number to 0
-            bumpedTag="${versionParts[0]}.0.${versionParts[2]}"
+          currentTag=$(git describe --abbrev=0 --tags --always)
+          if [[ -z "$currentTag" ]]; then
+            bumpedTag="1.0.0"
           else
-            # Increment third number
-            bumpedTag="${versionParts[0]}.${versionParts[1]}.$((${versionParts[2]} + 1))"
+            versionParts=(${currentTag//./ })
+            if [[ ${versionParts[2]} == 9 ]]; then
+              bumpedTag="${versionParts[0]}.${versionParts[1]}.0"
+            elif [[ ${versionParts[1]} == 9 ]]; then
+              bumpedTag="${versionParts[0]}.0.${versionParts[2]}"
+            else
+              bumpedTag="${versionParts[0]}.${versionParts[1]}.$((${versionParts[2]} + 1))"
+            fi
           fi
 
           # Create release
