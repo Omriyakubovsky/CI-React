@@ -15,7 +15,7 @@ spec:
     spec:
       project: default
       source:
-        repoURL: https://github.com/Omriyakubovsky/CI-React.git
+        repoURL: https://github.com/Omriyakubovsky/CI-Refact.git
         targetRevision: HEAD
         path: '{{path}}'
       destination:
