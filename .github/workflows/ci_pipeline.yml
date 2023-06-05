@@ -33,7 +33,7 @@ jobs:
           # Create tag
           echo "New tag to be created: $bumpedTag"
           git tag "$bumpedTag"
-          git push --tags
+          git push origin "$bumpedTag"
 
           # Create release
           export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
