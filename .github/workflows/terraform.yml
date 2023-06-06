@@ -45,8 +45,6 @@ jobs:
           repo="${repository#*/}"
           currentTag=${{ steps.get_tag.outputs.tag }}
           latestCommit=$(git log -1 --pretty=format:"%s")
-          # Remove the "v" prefix from the tag if present
-          currentTag="${currentTag#v}"
           # Split the tag into version parts
           IFS='.' read -r -a versionParts <<< "$currentTag"
           # Increment the appropriate version part
