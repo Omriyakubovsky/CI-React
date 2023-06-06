@@ -13,7 +13,7 @@ spec:
     metadata:
       name: '{{path.basenames}}'
     spec:
-      project: default
+      project: defaultssss
       source:
         repoURL: https://github.com/Omriyakubovsky/CI-Refact.git
         targetRevision: HEAD
