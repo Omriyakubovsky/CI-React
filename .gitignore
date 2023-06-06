@@ -6,10 +6,10 @@ React-App/node_modules
 .pnp.js
 
 # testing
-/coverage
+/coverage2
 
 # production
-/build
+/buildWW
 
 # misc
 .DS_Store
