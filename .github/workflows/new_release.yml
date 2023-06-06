@@ -42,12 +42,13 @@ jobs:
             bumpedTag="${versionParts[0]}.${versionParts[1]}.$((${versionParts[2]} + 1))"
           fi
           echo "::set-output name=bumped_tag::$bumpedTag"
+          echo $currentTag
         
       - name: Create release version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          version=$bumped_tag
+          version=0.0.3
           repository="$GITHUB_REPOSITORY"
           owner="${repository%%/*}"
           repo="${repository#*/}"
