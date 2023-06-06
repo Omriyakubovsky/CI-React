@@ -1,4 +1,4 @@
-ame: Bump Tag and Create Release
+name: Bump Tag and Create Release
 
 on:
   pull_request:
