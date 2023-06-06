@@ -1,4 +1,5 @@
 name: Creation of Release Version
+
 on:
   pull_request:
     branches: [main]
@@ -7,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Create Release  
+    name: Create Release
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
@@ -22,10 +23,9 @@ jobs:
           echo "Release_tag: Latest Tag is : $Release_tag"
           echo "::set-output name=Release_tag::$Release_tag"
 
-          
       - name: Checkout code
         uses: actions/checkout@v2
-        
+
       - name: Bumping Major Index
         id: bump_version_major
         if: contains(github.event.pull_request.title, 'major')
@@ -33,7 +33,7 @@ jobs:
         with:
           current-version: ${{ steps.releaseVersion.outputs.Release_tag }}
           version-fragment: 'major'
-                    
+
       - name: Bumping Minor Index
         id: bump_version_minor
         if: contains(github.event.pull_request.title, 'minor')
@@ -41,36 +41,53 @@ jobs:
         with:
           current-version: ${{ steps.releaseVersion.outputs.Release_tag }}
           version-fragment: 'feature'
-          
-      - name: Bumping Patch Index 
+
+      - name: Bumping Patch Index
         id: bump_version_patch
         if: contains(github.event.pull_request.title, 'patch')
         uses: christian-draeger/increment-semantic-version@1.0.2
         with:
           current-version: ${{ steps.releaseVersion.outputs.Release_tag }}
           version-fragment: 'bug'
-          
+
       - name: Create release version for bump_version_major
-        env: 
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           owner="Omriyakubovsky"
           repo="CI-React"
-          curl \
+          curl -L \
             -X POST \
             -H "Accept: application/vnd.github+json" \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-             https://api.github.com/repos/$owner/$repo/releases \
-            -d '{"tag_name":"${{ steps.bump_version_major.outputs.next-version }}","target_commitish":"master","name":"${{ steps.bump_version_major.outputs.next-version }}","body":"Description of the release","draft":false,"prerelease":false,"generate_release_notes":false}'
-          curl \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/$owner/$repo/releases \
+            -d '{"tag_name":"v${{ steps.bump_version_major.outputs.next-version }}","target_commitish":"main","name":"v${{ steps.bump_version_major.outputs.next-version }}","body":"Description of the release","draft":false,"prerelease":false,"generate_release_notes":false}'
+
+      - name: Create release version for bump_version_minor
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          owner="Omriyakubovsky"
+          repo="CI-React"
+          curl -L \
             -X POST \
             -H "Accept: application/vnd.github+json" \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-             https://api.github.com/repos/$owner/$repo/releases \
-            -d '{"tag_name":"${{ steps.bump_version_minor.outputs.next-version }}","target_commitish":"master","name":"${{ steps.bump_version_minor.outputs.next-version }}","body":"Description of the release","draft":false,"prerelease":false,"generate_release_notes":false}'
-          curl \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/$owner/$repo/releases \
+            -d '{"tag_name":"v${{ steps.bump_version_minor.outputs.next-version }}","target_commitish":"main","name":"v${{ steps.bump_version_minor.outputs.next-version }}","body":"Description of the release","draft":false,"prerelease":false,"generate_release_notes":false}'
+
+      - name: Create release version for bump_version_patch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          owner="Omriyakubovsky"
+          repo="CI-React"
+          curl -L \
             -X POST \
             -H "Accept: application/vnd.github+json" \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-             https://api.github.com/repos/$owner/$repo/releases \
-            -d '{"tag_name":"${{ steps.bump_version_patch.outputs.next-version }}","target_commitish":"master","name":"${{ steps.bump_version_patch.outputs.next-version }}","body":"Description of the release","draft":false,"prerelease":false,"generate_release_notes":false}'
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/$owner/$repo/releases \
+            -d '{"tag_name":"v${{ steps.bump_version_patch.outputs.next-version }}","target_commitish":"main","name":"v${{ steps.bump_version_patch.outputs.next-version }}","body":"Description of the release","draft":false,"prerelease":false,"generate_release_notes":false}'
