@@ -20,7 +20,7 @@ spec:
         path: '{{path}}'
       destination:
         server: https://kffubernetes.default.svc
-        namespace: '{{path.basename}}'
+        namespace: d'{{path.basename}}'
       syncPolicy:
         managedNamespaceMetadata:
           labels:
