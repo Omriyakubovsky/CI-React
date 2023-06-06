@@ -1,13 +1,15 @@
-name: Bump Tag and Create Release
+name: Bump Tag and Update README
 
 on:
   pull_request:
-    branches:
-      - main
+    types:
+      - closed
 
 jobs:
-  bump-and-release:
+  bump-and-update:
     runs-on: ubuntu-latest
+
+    if: github.event.pull_request.merged == true && github.event.pull_request.state == 'closed'
 
     steps:
       - name: Checkout repository
