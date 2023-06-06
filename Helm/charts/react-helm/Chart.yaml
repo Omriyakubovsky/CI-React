@@ -1,6 +1,0 @@
-apiVersion: v2
-name: react-helm
-description: Helm chart for React-App
-type: application
-version: 0.2.3
-appVersion: "1.16.0"
