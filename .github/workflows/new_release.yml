@@ -48,7 +48,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          version=$bumped_tag
+          version=0.0.3
           repository="$GITHUB_REPOSITORY"
           owner="${repository%%/*}"
           repo="${repository#*/}"
