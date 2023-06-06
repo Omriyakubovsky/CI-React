@@ -8,6 +8,7 @@ on:
 jobs:
   bump-and-release:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -15,7 +16,7 @@ jobs:
       - name: Get current tag
         id: get_tag
         run: |
-          currentTag=$(git describe --tags --abbrev=0)
+          currentTag=$(git describe --tags `git rev-list --tags --max-count=1`)
           echo "::set-output name=tag::$currentTag"
 
       - name: Bump tag version
@@ -36,7 +37,7 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.bump_version.outputs.bumped_tag }}
           release_name: Release ${{ steps.bump_version.outputs.bumped_tag }}
