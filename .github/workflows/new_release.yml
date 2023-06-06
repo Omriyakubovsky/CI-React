@@ -42,6 +42,7 @@ jobs:
             bumpedTag="${versionParts[0]}.${versionParts[1]}.$((${versionParts[2]} + 1))"
           fi
           echo "::set-output name=bumped_tag::$bumpedTag"
+          echo $currentTag
         
       - name: Create release version
         env:
