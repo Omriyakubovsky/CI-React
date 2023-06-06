@@ -15,7 +15,7 @@ jobs:
       - name: Taking the Latest Release Tag number
         id: releaseVersion
         run: |
-          owner="Omriyakubovsky"
+          owner="Omriyakubovsky/CI-React"
           repo="CI-React"
           release_json=$(curl https://api.github.com/repos/$owner/$repo/releases)
           echo "Release JSON: $release_json"
