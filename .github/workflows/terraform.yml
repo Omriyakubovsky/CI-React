@@ -47,16 +47,7 @@ jobs:
           repo="${repository#*/}"
           currentTag=${{ steps.get_tag.outputs.tag }}
           latestCommit=$(git log -1 --pretty=format:"%s")
-          # Split the tag into version parts
-          IFS='.' read -r -a versionParts <<< "$currentTag"
-          # Increment the appropriate version part
-          if [[ ${versionParts[2]} == 9 ]]; then
-            bumpedTag="${versionParts[0]}.${versionParts[1]}.0"
-          elif [[ ${versionParts[1]} == 9 ]]; then
-            bumpedTag="${versionParts[0]}.0.${versionParts[2]}"
-          else
-            bumpedTag="${versionParts[0]}.${versionParts[1]}.$((${versionParts[2]} + 1))"
-          fi
+          bumpedTag=${{ steps.bump_version.outputs.bumped_tag }}
           release_payload='{"tag_name":"'"$bumpedTag"'","target_commitish":"main","name":"'"$bumpedTag"'","body":"'"$latestCommit"'","draft":false,"prerelease":false,"generate_release_notes":false}'
           echo "Release payload: $release_payload"
           curl -L \
@@ -67,6 +58,7 @@ jobs:
             "https://api.github.com/repos/$owner/$repo/releases" \
             -d "$release_payload"
           echo "::set-output name=tag::$bumpedTag"
+
 
       - name: Debug release response
         run: |
