@@ -17,9 +17,10 @@ jobs:
           owner="DevOps"
           repo="CI-React"
           release_json=$(curl https://api.github.com/repos/$owner/$repo/releases)
+          echo "Release JSON: $release_json"
           Release_tag=$(echo "$release_json" | jq -r '.[0].tag_name')
           echo "Release_tag: Latest Tag is : $Release_tag"
-          echo ::set-output name=Release_tag::"$Release_tag"
+          echo "::set-output name=Release_tag::"$Release_tag"
           
       - name: Checkout code
         uses: actions/checkout@v2
