@@ -19,7 +19,7 @@ jobs:
           repository="$GITHUB_REPOSITORY"
           owner="${repository%%/*}"
           repo="${repository#*/}"
-          currentTag=$(curl -s "https://api.github.com/repos/$owner/$repo/tags" | jq -r '.[0].name'))
+          currentTag=$(curl -s "https://api.github.com/repos/$owner/$repo/tags" | jq -r '.[0].name')
           echo "::set-output name=tag::$currentTag"
           echo $currentTag
       - name: Bump tag version
