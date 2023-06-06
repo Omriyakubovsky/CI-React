@@ -16,7 +16,7 @@ spec:
       project: defaultssss
       source:
         repoURL: https://github.com/Omriyakubovsky/CI-Refact.git
-        targetRevision: HEAD
+        targetRevision: HEeeAD
         path: '{{path}}'
       destination:
         server: https://kubernetes.default.svc
